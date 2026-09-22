@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Modules\Shared\Services\TenantManager;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // scoped() para el manejo global del tenant: se reinicia por request/job.
+        $this->app->scoped(
+            TenantManager::class,
+            fn() => new TenantManager()
+        );
+
+        $this->app->bind(
+            \App\Modules\Shared\Contracts\TenantResolverInterface::class,
+            \App\Modules\Shared\Services\HeaderTenantResolver::class
+        );
     }
 
     /**
@@ -24,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->loadMigrationsFrom(base_path('app/Modules/Shared/Database/migrations'));
+
     }
 
     /**
@@ -37,14 +49,15 @@ class AppServiceProvider extends ServiceProvider
             app()->isProduction(),
         );
 
-        Password::defaults(fn (): ?Password => app()->isProduction()
-            ? Password::min(12)
-                ->mixedCase()
-                ->letters()
-                ->numbers()
-                ->symbols()
-                ->uncompromised()
-            : null,
+        Password::defaults(
+            fn(): ?Password => app()->isProduction()
+                ? Password::min(12)
+                    ->mixedCase()
+                    ->letters()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised()
+                : null,
         );
     }
 }
