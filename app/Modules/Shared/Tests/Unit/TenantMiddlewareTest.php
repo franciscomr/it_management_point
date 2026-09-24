@@ -2,7 +2,7 @@
 
 
 use App\Modules\Shared\Enums\TenantStatus;
-use App\Modules\Shared\Middleware\TenantMiddleware;
+use App\Modules\Shared\Http\Middleware\TenantMiddleware;
 use App\Modules\Shared\Models\Tenant;
 use App\Modules\Shared\Services\TenantManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;

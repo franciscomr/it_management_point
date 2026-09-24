@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Shared\Middleware;
+namespace App\Modules\Shared\Http\Middleware;
 
 use App\Modules\Shared\Contracts\TenantResolverInterface;
 use App\Modules\Shared\Services\TenantManager;

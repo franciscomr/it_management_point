@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Modules\Shared\Exceptions\ApiException;
+use App\Modules\Shared\Middleware\EnsureAuthenticatedUserBelongsToTenant;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,8 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
         $middleware->group('api', [
-            \App\Modules\Shared\Middleware\TenantMiddleware::class,
+            \App\Modules\Shared\Http\Middleware\TenantMiddleware::class,
         ]);
+
+        $middleware->alias(['tenant.match' => EnsureAuthenticatedUserBelongsToTenant::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
